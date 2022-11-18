@@ -1,0 +1,384 @@
+************************************************************************
+* auCdl Netlist:
+* 
+* Library Name:  ROM_128X16
+* Top Cell Name: decoder7_to_128
+* View Name:     schematic
+* Netlisted on:  Nov 18 15:44:38 2022
+************************************************************************
+
+*.BIPOLAR
+*.RESI = 2000 
+*.RESVAL
+*.CAPVAL
+*.DIOPERI
+*.DIOAREA
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+
+
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    inv
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT inv VDD VSS in out
+*.PININFO VDD:I VSS:I in:I out:O
+MM1 out in VDD VDD P_18 W = 1.85u L = 0.18u
+MM0 out in VSS VSS N_18 W = 0.5u L = 0.18u
+.ENDS
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    nand2
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT nand2 A B VDD VSS out
+*.PININFO A:I B:I VDD:I VSS:I out:O
+MM3 out B VDD VDD P_18 W = 1.85u L = 0.18u
+MM2 out A VDD VDD P_18 W = 1.85u L = 0.18u
+MM1 net14 B VSS VSS N_18 W = 0.5u L = 0.18u
+MM0 out A net14 VSS N_18 W = 0.5u L = 0.18u
+.ENDS
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    and2
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT and2 A B VDD VSS out
+*.PININFO A:I B:I VDD:I VSS:I out:O
+XI1 VDD VSS net10 out / inv
+XI0 A B VDD VSS net10 / nand2
+.ENDS
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    NAND_Blocks
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT NAND_Blocks A B<0> B<1> B<2> B<3> VDD VSS out<0> out<1> out<2> out<3>
+*.PININFO A:I B<0>:I B<1>:I B<2>:I B<3>:I VDD:I VSS:I out<0>:O out<1>:O 
+*.PININFO out<2>:O out<3>:O
+XI3 A B<3> VDD VSS out<3> / nand2
+XI2 A B<2> VDD VSS out<2> / nand2
+XI1 A B<1> VDD VSS out<1> / nand2
+XI0 A B<0> VDD VSS out<0> / nand2
+.ENDS
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    NNAND_Blocks
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT NNAND_Blocks A B<0> B<1> B<2> B<3> VDD VSS out<0> out<1> out<2> out<3>
+*.PININFO A:I B<0>:I B<1>:I B<2>:I B<3>:I VDD:I VSS:I out<0>:O out<1>:O 
+*.PININFO out<2>:O out<3>:O
+XI1 VDD VSS A net7 / inv
+XI0 net7 B<0> B<1> B<2> B<3> VDD VSS out<0> out<1> out<2> out<3> / NAND_Blocks
+.ENDS
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    nor2
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT nor2 A B VDD VSS out
+*.PININFO A:I B:I VDD:I VSS:I out:O
+MM3 out B VSS VSS N_18 W = 0.5u L = 0.18u
+MM2 out A VSS VSS N_18 W = 0.5u L = 0.18u
+MM1 out B net17 VDD P_18 W = 1.85u L = 0.18u
+MM0 net17 A VDD VDD P_18 W = 1.85u L = 0.18u
+.ENDS
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    NOR_Blocks
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT NOR_Blocks A B<0> B<1> B<2> B<3> VDD VSS out<0> out<1> out<2> out<3>
+*.PININFO A:I B<0>:I B<1>:I B<2>:I B<3>:I VDD:I VSS:I out<0>:O out<1>:O 
+*.PININFO out<2>:O out<3>:O
+XI3 A B<3> VDD VSS out<3> / nor2
+XI2 A B<2> VDD VSS out<2> / nor2
+XI1 A B<1> VDD VSS out<1> / nor2
+XI0 A B<0> VDD VSS out<0> / nor2
+.ENDS
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    NNOR_Blocks
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT NNOR_Blocks A B<0> B<1> B<2> B<3> VDD VSS out<0> out<1> out<2> out<3>
+*.PININFO A:I B<0>:I B<1>:I B<2>:I B<3>:I VDD:I VSS:I out<0>:O out<1>:O 
+*.PININFO out<2>:O out<3>:O
+XI2 VDD VSS A net4 / inv
+XI1 net4 B<0> B<1> B<2> B<3> VDD VSS out<0> out<1> out<2> out<3> / NOR_Blocks
+.ENDS
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    BASE_NOR
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT BASE_NOR VDD VSS in<0> in<1> out<0> out<1> out<2> out<3>
+*.PININFO VDD:I VSS:I in<0>:I in<1>:I out<0>:O out<1>:O out<2>:O out<3>:O
+XI5 net26 net22 VDD VSS out<0> / nor2
+XI4 in<0> net22 VDD VSS out<1> / nor2
+XI3 net26 in<1> VDD VSS out<2> / nor2
+XI2 in<0> in<1> VDD VSS out<3> / nor2
+XI1 VDD VSS in<1> net22 / inv
+XI0 VDD VSS in<0> net26 / inv
+.ENDS
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    decoder4_to_16
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT decoder4_to_16 VDD VSS in<0> in<1> in<2> in<3> out<0> out<1> out<2> 
++ out<3> out<4> out<5> out<6> out<7> out<8> out<9> out<10> out<11> out<12> 
++ out<13> out<14> out<15>
+*.PININFO VDD:I VSS:I in<0>:I in<1>:I in<2>:I in<3>:I out<0>:O out<1>:O 
+*.PININFO out<2>:O out<3>:O out<4>:O out<5>:O out<6>:O out<7>:O out<8>:O 
+*.PININFO out<9>:O out<10>:O out<11>:O out<12>:O out<13>:O out<14>:O out<15>:O
+XI15 in<1> net076<0> net076<1> net076<2> net076<3> VDD VSS net31<0> net31<1> 
++ net31<2> net31<3> / NNAND_Blocks
+XI14 in<1> net076<0> net076<1> net076<2> net076<3> VDD VSS net36<0> net36<1> 
++ net36<2> net36<3> / NAND_Blocks
+XI12 in<0> net36<0> net36<1> net36<2> net36<3> VDD VSS out<8> out<9> out<10> 
++ out<11> / NOR_Blocks
+XI13 in<0> net31<0> net31<1> net31<2> net31<3> VDD VSS out<12> out<13> out<14> 
++ out<15> / NOR_Blocks
+XI10 in<0> net36<0> net36<1> net36<2> net36<3> VDD VSS out<0> out<1> out<2> 
++ out<3> / NNOR_Blocks
+XI11 in<0> net31<0> net31<1> net31<2> net31<3> VDD VSS out<4> out<5> out<6> 
++ out<7> / NNOR_Blocks
+XI0 VDD VSS in<3> in<2> net076<0> net076<1> net076<2> net076<3> / BASE_NOR
+.ENDS
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    BASE_NAND
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT BASE_NAND VDD VSS in<0> in<1> out<0> out<1> out<2> out<3>
+*.PININFO VDD:I VSS:I in<0>:I in<1>:I out<0>:O out<1>:O out<2>:O out<3>:O
+XI5 in<0> in<1> VDD VSS out<0> / nand2
+XI4 net6 in<1> VDD VSS out<1> / nand2
+XI3 in<0> net2 VDD VSS out<2> / nand2
+XI2 net6 net2 VDD VSS out<3> / nand2
+XI1 VDD VSS in<1> net2 / inv
+XI0 VDD VSS in<0> net6 / inv
+.ENDS
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    decoder3_to_8
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT decoder3_to_8 VDD VSS in<0> in<1> in<2> out<0> out<1> out<2> out<3> 
++ out<4> out<5> out<6> out<7>
+*.PININFO VDD:I VSS:I in<0>:I in<1>:I in<2>:I out<0>:O out<1>:O out<2>:O 
+*.PININFO out<3>:O out<4>:O out<5>:O out<6>:O out<7>:O
+XI7 in<0> net18<0> net18<1> net18<2> net18<3> VDD VSS out<4> out<5> out<6> 
++ out<7> / NOR_Blocks
+XI6 in<0> net18<0> net18<1> net18<2> net18<3> VDD VSS out<0> out<1> out<2> 
++ out<3> / NNOR_Blocks
+XI1 VDD VSS in<2> in<1> net18<0> net18<1> net18<2> net18<3> / BASE_NAND
+.ENDS
+
+************************************************************************
+* Library Name: ROM_128X16
+* Cell Name:    decoder7_to_128
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT decoder7_to_128 VDD VSS in<0> in<1> in<2> in<3> in<4> in<5> in<6> 
++ out<0> out<1> out<2> out<3> out<4> out<5> out<6> out<7> out<8> out<9> 
++ out<10> out<11> out<12> out<13> out<14> out<15> out<16> out<17> out<18> 
++ out<19> out<20> out<21> out<22> out<23> out<24> out<25> out<26> out<27> 
++ out<28> out<29> out<30> out<31> out<32> out<33> out<34> out<35> out<36> 
++ out<37> out<38> out<39> out<40> out<41> out<42> out<43> out<44> out<45> 
++ out<46> out<47> out<48> out<49> out<50> out<51> out<52> out<53> out<54> 
++ out<55> out<56> out<57> out<58> out<59> out<60> out<61> out<62> out<63> 
++ out<64> out<65> out<66> out<67> out<68> out<69> out<70> out<71> out<72> 
++ out<73> out<74> out<75> out<76> out<77> out<78> out<79> out<80> out<81> 
++ out<82> out<83> out<84> out<85> out<86> out<87> out<88> out<89> out<90> 
++ out<91> out<92> out<93> out<94> out<95> out<96> out<97> out<98> out<99> 
++ out<100> out<101> out<102> out<103> out<104> out<105> out<106> out<107> 
++ out<108> out<109> out<110> out<111> out<112> out<113> out<114> out<115> 
++ out<116> out<117> out<118> out<119> out<120> out<121> out<122> out<123> 
++ out<124> out<125> out<126> out<127>
+*.PININFO VDD:I VSS:I in<0>:I in<1>:I in<2>:I in<3>:I in<4>:I in<5>:I in<6>:I 
+*.PININFO out<0>:O out<1>:O out<2>:O out<3>:O out<4>:O out<5>:O out<6>:O 
+*.PININFO out<7>:O out<8>:O out<9>:O out<10>:O out<11>:O out<12>:O out<13>:O 
+*.PININFO out<14>:O out<15>:O out<16>:O out<17>:O out<18>:O out<19>:O 
+*.PININFO out<20>:O out<21>:O out<22>:O out<23>:O out<24>:O out<25>:O 
+*.PININFO out<26>:O out<27>:O out<28>:O out<29>:O out<30>:O out<31>:O 
+*.PININFO out<32>:O out<33>:O out<34>:O out<35>:O out<36>:O out<37>:O 
+*.PININFO out<38>:O out<39>:O out<40>:O out<41>:O out<42>:O out<43>:O 
+*.PININFO out<44>:O out<45>:O out<46>:O out<47>:O out<48>:O out<49>:O 
+*.PININFO out<50>:O out<51>:O out<52>:O out<53>:O out<54>:O out<55>:O 
+*.PININFO out<56>:O out<57>:O out<58>:O out<59>:O out<60>:O out<61>:O 
+*.PININFO out<62>:O out<63>:O out<64>:O out<65>:O out<66>:O out<67>:O 
+*.PININFO out<68>:O out<69>:O out<70>:O out<71>:O out<72>:O out<73>:O 
+*.PININFO out<74>:O out<75>:O out<76>:O out<77>:O out<78>:O out<79>:O 
+*.PININFO out<80>:O out<81>:O out<82>:O out<83>:O out<84>:O out<85>:O 
+*.PININFO out<86>:O out<87>:O out<88>:O out<89>:O out<90>:O out<91>:O 
+*.PININFO out<92>:O out<93>:O out<94>:O out<95>:O out<96>:O out<97>:O 
+*.PININFO out<98>:O out<99>:O out<100>:O out<101>:O out<102>:O out<103>:O 
+*.PININFO out<104>:O out<105>:O out<106>:O out<107>:O out<108>:O out<109>:O 
+*.PININFO out<110>:O out<111>:O out<112>:O out<113>:O out<114>:O out<115>:O 
+*.PININFO out<116>:O out<117>:O out<118>:O out<119>:O out<120>:O out<121>:O 
+*.PININFO out<122>:O out<123>:O out<124>:O out<125>:O out<126>:O out<127>:O
+XI148 net33 net0731 VDD VSS out<1> / and2
+XI149 net33 net0983 VDD VSS out<3> / and2
+XI150 net33 net0818 VDD VSS out<2> / and2
+XI151 net33 net0893 VDD VSS out<6> / and2
+XI152 net33 net0703 VDD VSS out<7> / and2
+XI153 net33 net0723 VDD VSS out<5> / and2
+XI154 net33 net0793 VDD VSS out<4> / and2
+XI155 net32 net0793 VDD VSS out<20> / and2
+XI156 net32 net0723 VDD VSS out<21> / and2
+XI157 net32 net0703 VDD VSS out<23> / and2
+XI158 net32 net0893 VDD VSS out<22> / and2
+XI159 net32 net0818 VDD VSS out<18> / and2
+XI160 net32 net0983 VDD VSS out<19> / and2
+XI161 net32 net0731 VDD VSS out<17> / and2
+XI162 net32 net0993 VDD VSS out<16> / and2
+XI163 net055 net0993 VDD VSS out<48> / and2
+XI164 net055 net0731 VDD VSS out<49> / and2
+XI165 net055 net0983 VDD VSS out<51> / and2
+XI166 net055 net0818 VDD VSS out<50> / and2
+XI167 net055 net0893 VDD VSS out<54> / and2
+XI168 net055 net0703 VDD VSS out<55> / and2
+XI169 net055 net0723 VDD VSS out<53> / and2
+XI170 net055 net0793 VDD VSS out<52> / and2
+XI171 net31 net0793 VDD VSS out<36> / and2
+XI172 net31 net0723 VDD VSS out<37> / and2
+XI173 net31 net0703 VDD VSS out<39> / and2
+XI174 net31 net0893 VDD VSS out<38> / and2
+XI175 net31 net0818 VDD VSS out<34> / and2
+XI176 net31 net0983 VDD VSS out<35> / and2
+XI177 net31 net0731 VDD VSS out<33> / and2
+XI178 net31 net0993 VDD VSS out<32> / and2
+XI179 net0110 net0993 VDD VSS out<64> / and2
+XI180 net0110 net0731 VDD VSS out<65> / and2
+XI181 net0110 net0983 VDD VSS out<67> / and2
+XI182 net0110 net0818 VDD VSS out<66> / and2
+XI183 net0110 net0893 VDD VSS out<70> / and2
+XI184 net0110 net0703 VDD VSS out<71> / and2
+XI185 net0110 net0723 VDD VSS out<69> / and2
+XI186 net0110 net0793 VDD VSS out<68> / and2
+XI187 net0884 net0793 VDD VSS out<84> / and2
+XI188 net0884 net0723 VDD VSS out<85> / and2
+XI189 net0884 net0703 VDD VSS out<87> / and2
+XI190 net0884 net0893 VDD VSS out<86> / and2
+XI191 net0884 net0818 VDD VSS out<82> / and2
+XI192 net0884 net0983 VDD VSS out<83> / and2
+XI193 net0884 net0731 VDD VSS out<81> / and2
+XI194 net0884 net0993 VDD VSS out<80> / and2
+XI195 net26 net0993 VDD VSS out<112> / and2
+XI196 net26 net0731 VDD VSS out<113> / and2
+XI197 net26 net0983 VDD VSS out<115> / and2
+XI198 net26 net0818 VDD VSS out<114> / and2
+XI199 net26 net0893 VDD VSS out<118> / and2
+XI200 net26 net0703 VDD VSS out<119> / and2
+XI201 net26 net0723 VDD VSS out<117> / and2
+XI202 net26 net0793 VDD VSS out<116> / and2
+XI203 net27 net0793 VDD VSS out<100> / and2
+XI204 net27 net0723 VDD VSS out<101> / and2
+XI205 net27 net0703 VDD VSS out<103> / and2
+XI206 net27 net0893 VDD VSS out<102> / and2
+XI207 net27 net0818 VDD VSS out<98> / and2
+XI208 net27 net0983 VDD VSS out<99> / and2
+XI209 net27 net0731 VDD VSS out<97> / and2
+XI210 net27 net0993 VDD VSS out<96> / and2
+XI146 net33 net0993 VDD VSS out<0> / and2
+XI211 net27 net0159 VDD VSS out<104> / and2
+XI212 net27 net11 VDD VSS out<105> / and2
+XI213 net27 net9 VDD VSS out<107> / and2
+XI214 net27 net01258 VDD VSS out<106> / and2
+XI215 net27 net6 VDD VSS out<110> / and2
+XI216 net27 net029 VDD VSS out<111> / and2
+XI217 net27 net01208 VDD VSS out<109> / and2
+XI218 net27 net01283 VDD VSS out<108> / and2
+XI219 net26 net01283 VDD VSS out<124> / and2
+XI220 net26 net01208 VDD VSS out<125> / and2
+XI221 net26 net029 VDD VSS out<127> / and2
+XI222 net26 net6 VDD VSS out<126> / and2
+XI223 net26 net01258 VDD VSS out<122> / and2
+XI224 net26 net9 VDD VSS out<123> / and2
+XI225 net26 net11 VDD VSS out<121> / and2
+XI226 net26 net0159 VDD VSS out<120> / and2
+XI227 net0884 net0159 VDD VSS out<88> / and2
+XI228 net0884 net11 VDD VSS out<89> / and2
+XI229 net0884 net9 VDD VSS out<91> / and2
+XI230 net0884 net01258 VDD VSS out<90> / and2
+XI231 net0884 net6 VDD VSS out<94> / and2
+XI232 net0884 net029 VDD VSS out<95> / and2
+XI233 net0884 net01208 VDD VSS out<93> / and2
+XI234 net0884 net01283 VDD VSS out<92> / and2
+XI235 net0110 net01283 VDD VSS out<76> / and2
+XI236 net0110 net01208 VDD VSS out<77> / and2
+XI237 net0110 net029 VDD VSS out<79> / and2
+XI238 net0110 net6 VDD VSS out<78> / and2
+XI239 net0110 net01258 VDD VSS out<74> / and2
+XI240 net0110 net9 VDD VSS out<75> / and2
+XI241 net0110 net11 VDD VSS out<73> / and2
+XI242 net0110 net0159 VDD VSS out<72> / and2
+XI243 net31 net0159 VDD VSS out<40> / and2
+XI244 net31 net11 VDD VSS out<41> / and2
+XI245 net31 net9 VDD VSS out<43> / and2
+XI246 net31 net01258 VDD VSS out<42> / and2
+XI247 net31 net6 VDD VSS out<46> / and2
+XI248 net31 net029 VDD VSS out<47> / and2
+XI249 net31 net01208 VDD VSS out<45> / and2
+XI250 net31 net01283 VDD VSS out<44> / and2
+XI251 net055 net01283 VDD VSS out<60> / and2
+XI252 net055 net01208 VDD VSS out<61> / and2
+XI253 net055 net029 VDD VSS out<63> / and2
+XI254 net055 net6 VDD VSS out<62> / and2
+XI255 net055 net01258 VDD VSS out<58> / and2
+XI256 net055 net9 VDD VSS out<59> / and2
+XI257 net055 net11 VDD VSS out<57> / and2
+XI258 net055 net0159 VDD VSS out<56> / and2
+XI259 net32 net0159 VDD VSS out<24> / and2
+XI260 net32 net11 VDD VSS out<25> / and2
+XI261 net32 net9 VDD VSS out<27> / and2
+XI262 net32 net01258 VDD VSS out<26> / and2
+XI263 net32 net6 VDD VSS out<30> / and2
+XI264 net32 net029 VDD VSS out<31> / and2
+XI265 net32 net01208 VDD VSS out<29> / and2
+XI266 net32 net01283 VDD VSS out<28> / and2
+XI267 net33 net01283 VDD VSS out<12> / and2
+XI268 net33 net01208 VDD VSS out<13> / and2
+XI269 net33 net029 VDD VSS out<15> / and2
+XI270 net33 net6 VDD VSS out<14> / and2
+XI271 net33 net01258 VDD VSS out<10> / and2
+XI272 net33 net9 VDD VSS out<11> / and2
+XI273 net33 net11 VDD VSS out<9> / and2
+XI274 net33 net0159 VDD VSS out<8> / and2
+XI1 VDD VSS in<3> in<4> in<5> in<6> net0993 net0731 net0818 net0983 net0793 
++ net0723 net0893 net0703 net0159 net11 net01258 net9 net01283 net01208 net6 
++ net029 / decoder4_to_16
+XI0 VDD VSS in<0> in<1> in<2> net33 net32 net31 net055 net0110 net0884 net27 
++ net26 / decoder3_to_8
+.ENDS
